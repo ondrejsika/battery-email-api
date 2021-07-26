@@ -1,0 +1,8 @@
+# Required
+image:
+host:
+emailFrom:
+emailSmtpHost:
+emailPassword:
+# Optional
+replicas: 2

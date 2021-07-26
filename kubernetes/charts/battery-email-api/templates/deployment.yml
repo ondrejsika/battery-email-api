@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: main
+          image: {{ .Values.image }}
+          args:
+            - /bin/sh
+            - -c
+            - "battery-email-api -from $FROM -smtp-host $SMTP_HOST -password $PASSWORD"
+          env:
+            - name: FROM
+              value: {{ required "emailFrom" .Values.emailFrom }}
+            - name: SMTP_HOST
+              value: {{ required "emailSmtpHost" .Values.emailSmtpHost }}
+            - name: PASSWORD
+              value: {{ required "emailPassword" .Values.emailPassword }} 
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+              httpHeaders:
+              - name: Host
+                value: {{ .Values.host }}
