@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/ondrejsika/battery-email-api/battery_state"
 	"github.com/ondrejsika/gosendmail/lib"
 )
 
@@ -42,6 +44,8 @@ func main() {
 	smtpHost := flag.String("smtp-host", "", "")
 	smtpPort := flag.String("smtp-port", "587", "optional")
 	password := flag.String("password", "", "")
+	dbDriver := flag.String("db-driver", "none", "")
+	dbConnection := flag.String("db-connection", "", "")
 
 	flag.Parse()
 
@@ -66,11 +70,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	bs := battery_state.Init(*dbDriver, *dbConnection)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Write([]byte(
 			"[battery-email-api] " +
-				"battery-email-api v2 by Ondrej Sika (sika.io)"))
+				"battery-email-api v3 by Ondrej Sika (sika.io)"))
 	})
 
 	http.HandleFunc("/api/notify", func(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +90,9 @@ func main() {
 		battery_level := r.URL.Query()["battery_level"]
 		to := r.URL.Query()["to"]
 		level := r.URL.Query()["level"]
+		if bs != nil {
+			bs.Add(device[0], level[0])
+		}
 		if level[0] == "low" {
 			notify(
 				w,
@@ -113,5 +122,31 @@ func main() {
 		w.WriteHeader(400)
 		w.Write([]byte("[battery-email-api] No level"))
 	})
+
+	http.HandleFunc("/api/get", func(w http.ResponseWriter, r *http.Request) {
+		tokenFromRequest := r.URL.Query()["token"]
+		if *token != tokenFromRequest[0] {
+			w.WriteHeader(403)
+			w.Write([]byte("[battery-email-api] Wrong token"))
+			return
+		}
+		if *dbDriver == "none" {
+			w.WriteHeader(400)
+			w.Write([]byte("[battery-email-api] Battery state is not enabled. " +
+				"Driver is none."))
+			return
+		}
+		device := r.URL.Query()["device"]
+		b := bs.Get(device[0])
+		var jsonOutput []byte
+		if b.ID == 0 {
+			jsonOutput, _ = json.Marshal(nil)
+		} else {
+			jsonOutput, _ = json.Marshal(b.Level)
+		}
+		w.WriteHeader(200)
+		w.Write([]byte(jsonOutput))
+	})
+
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
