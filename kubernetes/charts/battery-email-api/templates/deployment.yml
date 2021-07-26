@@ -20,14 +20,16 @@ spec:
           args:
             - /bin/sh
             - -c
-            - "battery-email-api -from $FROM -smtp-host $SMTP_HOST -password $PASSWORD"
+            - "battery-email-api -token $TOKEN -from $FROM -smtp-host $SMTP_HOST -password $PASSWORD"
           env:
+            - name: TOKEN
+              value: {{ required "token" .Values.token }}
             - name: FROM
               value: {{ required "emailFrom" .Values.emailFrom }}
             - name: SMTP_HOST
               value: {{ required "emailSmtpHost" .Values.emailSmtpHost }}
             - name: PASSWORD
-              value: {{ required "emailPassword" .Values.emailPassword }} 
+              value: {{ required "emailPassword" .Values.emailPassword }}
           ports:
             - name: http
               containerPort: 80

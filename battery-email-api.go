@@ -1,12 +1,11 @@
-
 package main
 
 import (
 	"flag"
 	"fmt"
-	"os"
-	"net/http"
 	"log"
+	"net/http"
+	"os"
 
 	"github.com/ondrejsika/gosendmail/lib"
 )
@@ -30,6 +29,7 @@ func notify(w http.ResponseWriter,
 }
 
 func main() {
+	token := flag.String("token", "", "")
 	from := flag.String("from", "", "")
 	smtpHost := flag.String("smtp-host", "", "")
 	smtpPort := flag.String("smtp-port", "587", "optional")
@@ -37,6 +37,10 @@ func main() {
 
 	flag.Parse()
 
+	if *token == "" {
+		fmt.Fprintf(os.Stderr, "-token is not defined\n")
+		os.Exit(1)
+	}
 	if *from == "" {
 		fmt.Fprintf(os.Stderr, "-from is not defined\n")
 		os.Exit(1)
@@ -60,6 +64,12 @@ func main() {
 	})
 
 	http.HandleFunc("/notify-low", func(w http.ResponseWriter, r *http.Request) {
+		tokenFromRequest, _ := r.URL.Query()["token"]
+		if *token != tokenFromRequest[0] {
+			w.WriteHeader(403)
+			w.Write([]byte("Wrong token"))
+			return
+		}
 		device, _ := r.URL.Query()["device"]
 		battery_level, _ := r.URL.Query()["battery_level"]
 		to, _ := r.URL.Query()["to"]
@@ -67,6 +77,12 @@ func main() {
 	})
 
 	http.HandleFunc("/notify-high", func(w http.ResponseWriter, r *http.Request) {
+		tokenFromRequest, _ := r.URL.Query()["token"]
+		if *token != tokenFromRequest[0] {
+			w.WriteHeader(403)
+			w.Write([]byte("Wrong token"))
+			return
+		}
 		device, _ := r.URL.Query()["device"]
 		battery_level, _ := r.URL.Query()["battery_level"]
 		to, _ := r.URL.Query()["to"]
