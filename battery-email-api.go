@@ -10,7 +10,8 @@ import (
 	"github.com/ondrejsika/gosendmail/lib"
 )
 
-func notify(w http.ResponseWriter,
+func notify(
+	w http.ResponseWriter,
 	smtpHost string,
 	smtpPort string,
 	from string,
@@ -18,7 +19,14 @@ func notify(w http.ResponseWriter,
 	to string,
 	subject string,
 	message string) {
-	err := lib.GoSendMail(smtpHost, smtpPort, from, password, to, subject, message)
+	err := lib.GoSendMail(
+		smtpHost,
+		smtpPort,
+		from,
+		password,
+		to,
+		subject,
+		message)
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte("[battery-email-api] ERR"))
@@ -75,11 +83,27 @@ func main() {
 		to := r.URL.Query()["to"]
 		level := r.URL.Query()["level"]
 		if level[0] == "low" {
-			notify(w, *smtpHost, *smtpPort, *from, *password, to[0], "["+device[0]+"] Low Battery", "Battery level of "+device[0]+" is under "+battery_level[0]+"%. Please, charge it. O.")
+			notify(
+				w,
+				*smtpHost,
+				*smtpPort,
+				*from,
+				*password,
+				to[0],
+				"["+device[0]+"] Low Battery",
+				"Battery level of "+device[0]+" is under "+battery_level[0]+"%. Please, charge it. O.")
 			return
 		}
 		if level[0] == "high" {
-			notify(w, *smtpHost, *smtpPort, *from, *password, to[0], "["+device[0]+"] High Battery", "Battery level of "+device[0]+" is over "+battery_level[0]+"%. Please, stop charging. O.")
+			notify(
+				w,
+				*smtpHost,
+				*smtpPort,
+				*from,
+				*password,
+				to[0],
+				"["+device[0]+"] High Battery",
+				"Battery level of "+device[0]+" is over "+battery_level[0]+"%. Please, stop charging. O.")
 			return
 		}
 		w.WriteHeader(400)
