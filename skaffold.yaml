@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+build:
+  artifacts:
+    - image: reg.istry.cz/live/battery-email-api
+      kaniko:
+        cache: {}
+  cluster: {}
+deploy:
+  helm:
+    releases:
+      - name: battery-email-api
+        chartPath: ./kubernetes/charts/battery-email-api
+        valuesFiles:
+          - devel.local.yml
+        artifactOverrides:
+          image: reg.istry.cz/live/battery-email-api
