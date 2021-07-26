@@ -21,11 +21,11 @@ func notify(w http.ResponseWriter,
 	err := lib.GoSendMail(smtpHost, smtpPort, from, password, to, subject, message)
 	if err != nil {
 		w.WriteHeader(500)
-		w.Write([]byte("ERR"))
+		w.Write([]byte("[battery-email-api] ERR"))
 		panic(err)
 	}
 	w.WriteHeader(200)
-	w.Write([]byte("OK"))
+	w.Write([]byte("[battery-email-api] OK"))
 }
 
 func main() {
@@ -60,14 +60,14 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		w.Write([]byte("battery-email-api v2 by Ondrej Sika (sika.io)"))
+		w.Write([]byte("[battery-email-api] battery-email-api v2 by Ondrej Sika (sika.io)"))
 	})
 
 	http.HandleFunc("/api/notify", func(w http.ResponseWriter, r *http.Request) {
 		tokenFromRequest := r.URL.Query()["token"]
 		if *token != tokenFromRequest[0] {
 			w.WriteHeader(403)
-			w.Write([]byte("Wrong token"))
+			w.Write([]byte("[battery-email-api] Wrong token"))
 			return
 		}
 		device := r.URL.Query()["device"]
@@ -83,7 +83,7 @@ func main() {
 			return
 		}
 		w.WriteHeader(400)
-		w.Write([]byte("No level"))
+		w.Write([]byte("[battery-email-api] No level"))
 	})
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
