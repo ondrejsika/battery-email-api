@@ -68,7 +68,9 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		w.Write([]byte("[battery-email-api] battery-email-api v2 by Ondrej Sika (sika.io)"))
+		w.Write([]byte(
+			"[battery-email-api] " +
+				"battery-email-api v2 by Ondrej Sika (sika.io)"))
 	})
 
 	http.HandleFunc("/api/notify", func(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +93,8 @@ func main() {
 				*password,
 				to[0],
 				"["+device[0]+"] Low Battery",
-				"Battery level of "+device[0]+" is under "+battery_level[0]+"%. Please, charge it. O. \n\n--\n"+r.Host)
+				"Battery level of "+device[0]+" is under "+
+					battery_level[0]+"%. Please, charge it. O. \n\n--\n"+r.Host)
 			return
 		}
 		if level[0] == "high" {
@@ -103,7 +106,8 @@ func main() {
 				*password,
 				to[0],
 				"["+device[0]+"] High Battery",
-				"Battery level of "+device[0]+" is over "+battery_level[0]+"%. Please, stop charging. O. \n\n--\n"+r.Host)
+				"Battery level of "+device[0]+" is over "+
+					battery_level[0]+"%. Please, stop charging. O. \n\n--\n"+r.Host)
 			return
 		}
 		w.WriteHeader(400)
