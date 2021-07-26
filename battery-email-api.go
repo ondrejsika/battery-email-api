@@ -91,7 +91,7 @@ func main() {
 				*password,
 				to[0],
 				"["+device[0]+"] Low Battery",
-				"Battery level of "+device[0]+" is under "+battery_level[0]+"%. Please, charge it. O.")
+				"Battery level of "+device[0]+" is under "+battery_level[0]+"%. Please, charge it. O. \n\n--\n"+r.Host)
 			return
 		}
 		if level[0] == "high" {
@@ -103,7 +103,7 @@ func main() {
 				*password,
 				to[0],
 				"["+device[0]+"] High Battery",
-				"Battery level of "+device[0]+" is over "+battery_level[0]+"%. Please, stop charging. O.")
+				"Battery level of "+device[0]+" is over "+battery_level[0]+"%. Please, stop charging. O. \n\n--\n"+r.Host)
 			return
 		}
 		w.WriteHeader(400)
