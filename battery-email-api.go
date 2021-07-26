@@ -64,28 +64,28 @@ func main() {
 	})
 
 	http.HandleFunc("/notify-low", func(w http.ResponseWriter, r *http.Request) {
-		tokenFromRequest, _ := r.URL.Query()["token"]
+		tokenFromRequest := r.URL.Query()["token"]
 		if *token != tokenFromRequest[0] {
 			w.WriteHeader(403)
 			w.Write([]byte("Wrong token"))
 			return
 		}
-		device, _ := r.URL.Query()["device"]
-		battery_level, _ := r.URL.Query()["battery_level"]
-		to, _ := r.URL.Query()["to"]
+		device := r.URL.Query()["device"]
+		battery_level := r.URL.Query()["battery_level"]
+		to := r.URL.Query()["to"]
 		notify(w, *smtpHost, *smtpPort, *from, *password, to[0], "["+device[0]+"] Low Battery", "Battery level of "+device[0]+" is under "+battery_level[0]+"%. Please, charge it. O.")
 	})
 
 	http.HandleFunc("/notify-high", func(w http.ResponseWriter, r *http.Request) {
-		tokenFromRequest, _ := r.URL.Query()["token"]
+		tokenFromRequest := r.URL.Query()["token"]
 		if *token != tokenFromRequest[0] {
 			w.WriteHeader(403)
 			w.Write([]byte("Wrong token"))
 			return
 		}
-		device, _ := r.URL.Query()["device"]
-		battery_level, _ := r.URL.Query()["battery_level"]
-		to, _ := r.URL.Query()["to"]
+		device := r.URL.Query()["device"]
+		battery_level := r.URL.Query()["battery_level"]
+		to := r.URL.Query()["to"]
 		notify(w, *smtpHost, *smtpPort, *from, *password, to[0], "["+device[0]+"] High Battery", "Battery level of "+device[0]+" is over "+battery_level[0]+"%. Please, stop charging. O.")
 	})
 	log.Fatal(http.ListenAndServe(":80", nil))
