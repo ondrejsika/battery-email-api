@@ -8,3 +8,5 @@ emailPassword:
 # Optional
 replicas: 2
 clusterIssuer: letsencrypt
+dbDriver: "none"
+dbConnection: ""

@@ -20,7 +20,7 @@ spec:
           args:
             - /bin/sh
             - -c
-            - "battery-email-api -token $TOKEN -from $FROM -smtp-host $SMTP_HOST -password $PASSWORD"
+            - 'battery-email-api -token $TOKEN -from $FROM -smtp-host $SMTP_HOST -password $PASSWORD {{ if ne .Values.dbDriver "none"}}-db-driver $DB_DRIVER -db-connection "$DB_CONNECTION"{{end}}'
           env:
             - name: TOKEN
               value: {{ required "token" .Values.token }}
@@ -30,6 +30,10 @@ spec:
               value: {{ required "emailSmtpHost" .Values.emailSmtpHost }}
             - name: PASSWORD
               value: {{ required "emailPassword" .Values.emailPassword }}
+            - name: DB_DRIVER
+              value: {{ .Values.dbDriver }}
+            - name: DB_CONNECTION
+              value: {{ .Values.dbConnection }}
           ports:
             - name: http
               containerPort: 80
