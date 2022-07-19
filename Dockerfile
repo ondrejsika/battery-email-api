@@ -3,7 +3,7 @@ WORKDIR /battery-email-api
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
-COPY battery-email-api.go .
+COPY . .
 RUN go build
 
 FROM debian:10-slim
