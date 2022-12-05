@@ -16,16 +16,18 @@ func notify(
 	w http.ResponseWriter,
 	smtpHost string,
 	smtpPort string,
-	from string,
+	user string,
 	password string,
+	from string,
 	to string,
 	subject string,
 	message string) {
 	err := lib.GoSendMail(
 		smtpHost,
 		smtpPort,
-		from,
+		user,
 		password,
+		from,
 		to,
 		subject,
 		message)
@@ -43,6 +45,7 @@ func main() {
 	from := flag.String("from", "", "")
 	smtpHost := flag.String("smtp-host", "", "")
 	smtpPort := flag.String("smtp-port", "587", "optional")
+	user := flag.String("user", "", "")
 	password := flag.String("password", "", "")
 	dbDriver := flag.String("db-driver", "none", "")
 	dbConnection := flag.String("db-connection", "", "")
@@ -63,6 +66,10 @@ func main() {
 	}
 	if *smtpPort == "" {
 		fmt.Fprintf(os.Stderr, "-smtp-port is not defined\n")
+		os.Exit(1)
+	}
+	if *user == "" {
+		fmt.Fprintf(os.Stderr, "-user is not defined\n")
 		os.Exit(1)
 	}
 	if *password == "" {
@@ -98,8 +105,9 @@ func main() {
 				w,
 				*smtpHost,
 				*smtpPort,
-				*from,
+				*user,
 				*password,
+				*from,
 				to[0],
 				"["+device[0]+"] Low Battery",
 				"Battery level of "+device[0]+" is under "+
@@ -111,8 +119,9 @@ func main() {
 				w,
 				*smtpHost,
 				*smtpPort,
-				*from,
+				*user,
 				*password,
+				*from,
 				to[0],
 				"["+device[0]+"] High Battery",
 				"Battery level of "+device[0]+" is over "+
