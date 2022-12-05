@@ -4,6 +4,7 @@ image:
 host:
 emailFrom:
 emailSmtpHost:
+emailUser:
 emailPassword:
 # Optional
 replicas: 2
